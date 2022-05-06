@@ -1,5 +1,0 @@
-[
-    { "id": 1, "event": "Событие", "discription": "Показанomponent.", "dates": "04.04.2022" },
-    { "id": 2, "event": "Задача", "discription": "Поймать рыбу", "dates": "01.06.2022" },
-    { "id": 3, "event": "Событие", "discription": "Поймать рыбу", "dates": "01.05.2022" }
-]
