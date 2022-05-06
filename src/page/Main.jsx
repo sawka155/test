@@ -10,26 +10,37 @@ const axios = require('axios').default;
 const Main = () => {
 
     const onSubmit = e => {
-        e.preventDefault();
-        axios.post('http://localhost:3002/users', {
-            'event': event.toString(),
-            'discription': discription.toString(),
-            'date': date.toString(),
-        });
+        if (event !== "Событие" && event !== "Дело") {
+            e.preventDefault();
+            alert('Ошибка')
+        } else {
+            e.preventDefault();
+            axios.post('http://localhost:3002/users', {
+                'event': event.toString(),
+                'discription': discription.toString(),
+                'date': date.toString(),
+            });
 
-        for (let index = 0; index < 2; index++) {
-            axios.get('http://localhost:3002/users/' + value.toLocaleDateString("ru-RU"))
-                .then(function (res) { setTask(res.data); console.log(task); })
+            for (let index = 0; index < 2; index++) {
+                axios.get('http://localhost:3002/users/' + value.toLocaleDateString("ru-RU"))
+                    .then(function (res) { setTask(res.data); console.log(task); })
+            }
+
+            setEvent('Выберите событие');
+            setDiscription('');
         }
     }
 
-    const [event, setEvent] = useState('');
+    const [event, setEvent] = useState('Выберите событие');
     const [discription, setDiscription] = useState('');
     const [date, setDate] = useState(new Date().toLocaleDateString("ru-RU").toString());
     const [isDate, setisDate] = useState(new Date().toLocaleDateString("ru-RU").toString());
     const [task, setTask] = useState([]);
     const [value, onChange] = useState(new Date());
     const [asd, setAsd] = useState([task]);
+
+    const [putEvent, setPutEvent] = useState();
+    const [putDisription, setPutDisription] = useState('');
 
 
     React.useEffect(() => {
@@ -57,13 +68,16 @@ const Main = () => {
 
             />
             <form action="http://localhost:3002/users" method="post" onSubmit={onSubmit}>
-                <label htmlFor="event">Событие</label>
-                <input
-                    type="text"
-                    name="event"
+                <select
+                    className='calendar__select'
                     value={event}
-                    onChange={(e) => setEvent(e.target.value)}
-                />
+                    onChange={e => setEvent(e.target.value)}
+
+                >
+                    <option disabled>Выберите событие</option>
+                    <option>Событие</option>
+                    <option>Дело</option>
+                </select>
 
                 <label htmlFor="discription">Описание</label>
                 <input
@@ -113,22 +127,38 @@ const Main = () => {
                                 for (let index = 0; index < 2; index++) {
                                     axios.get('http://localhost:3002/users/' + task.date)
                                         .then(function (res) { setTask(res.data); console.log(task); })
-
                                 }
                             }}
                         >Удалить данные</button>
                         <button
                             onClick={(e) => {
                                 axios.put('http://localhost:3002/users/' + task.id.toString(), {
-                                    'event': task.event,
-                                    'discription': task.discription,
-                                    'date': task.date
+                                    'event': putEvent,
+                                    'discription': putDisription,
+                                    'date': value.toLocaleDateString("ru-RU")
                                 })
+
+                                for (let index = 0; index < 2; index++) {
+                                    axios.get('http://localhost:3002/users/' + task.date)
+                                        .then(function (res) { setTask(res.data); console.log(task); })
+                                }
+                                setPutEvent('');
+                                setPutDisription('');
+
                             }}
                         > Изменить </button>
-                        <input type="text" placeholder={task.event} />
-                        <input type="text" placeholder={task.discription} />
-                        <input type="text" placeholder={task.date} />
+
+                        <select
+                            className='calendar__select'
+                            value={task.event}
+                            onChange={(e, value) => { value = { value }; setPutEvent(e.target.value) }}
+
+                        >
+                            <option>Событие</option>
+                            <option>Дело</option>
+                        </select>
+                        <input type="text" placeholder={task.discription}
+                            value={putDisription} onChange={(e) => setPutDisription(e.target.value)} />
                     </div>
                 )}
             </div>
