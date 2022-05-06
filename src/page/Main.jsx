@@ -10,7 +10,7 @@ const axios = require('axios').default;
 const Main = () => {
 
     const onSubmit = e => {
-        if (event !== "Событие" && event !== "Дело") {
+        if (discription === '' || (event !== "Событие" && event !== "Дело")) {
             e.preventDefault();
             alert('Ошибка')
         } else {
@@ -39,7 +39,7 @@ const Main = () => {
     const [value, onChange] = useState(new Date());
     const [asd, setAsd] = useState([task]);
 
-    const [putEvent, setPutEvent] = useState();
+    const [putEvent, setPutEvent] = useState('Выберите событие');
     const [putDisription, setPutDisription] = useState('');
 
 
@@ -132,28 +132,32 @@ const Main = () => {
                         >Удалить данные</button>
                         <button
                             onClick={(e) => {
-                                axios.put('http://localhost:3002/users/' + task.id.toString(), {
-                                    'event': putEvent,
-                                    'discription': putDisription,
-                                    'date': value.toLocaleDateString("ru-RU")
-                                })
 
-                                for (let index = 0; index < 2; index++) {
-                                    axios.get('http://localhost:3002/users/' + task.date)
-                                        .then(function (res) { setTask(res.data); console.log(task); })
+                                if (putDisription === '' || (putEvent !== "Событие" && putEvent !== "Дело")) {
+                                    alert('Ошибка')
+                                } else {
+                                    axios.put('http://localhost:3002/users/' + task.id.toString(), {
+                                        'event': putEvent,
+                                        'discription': putDisription,
+                                        'date': value.toLocaleDateString("ru-RU")
+                                    })
+
+                                    for (let index = 0; index < 2; index++) {
+                                        axios.get('http://localhost:3002/users/' + task.date)
+                                            .then(function (res) { setTask(res.data); console.log(task); })
+                                    }
+                                    setPutEvent('Выберите событие');
+                                    setPutDisription('');
                                 }
-                                setPutEvent('');
-                                setPutDisription('');
-
                             }}
                         > Изменить </button>
 
                         <select
                             className='calendar__select'
-                            value={task.event}
-                            onChange={(e, value) => { value = { value }; setPutEvent(e.target.value) }}
-
+                            value={putEvent}
+                            onChange={(e) => { setPutEvent(e.target.value) }}
                         >
+                            <option disabled>Выберите событие</option>
                             <option>Событие</option>
                             <option>Дело</option>
                         </select>
